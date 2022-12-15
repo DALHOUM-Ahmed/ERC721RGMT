@@ -1339,6 +1339,66 @@ contract ERC721RG is randomizedABC, ERC721("Fruits2", "FRS2"), provable {
     C_price = _Cprice;
   }
 
+  function _discountedA(uint8[] memory _groups) internal returns (uint256 _payedAmount) {
+    bool jumped;
+    _payedAmount = msg.value;
+    for (uint256 i = 0; i < _groups.length; i++) {
+      if (_groups[i] == 1 && !jumped) {
+        jumped = true;
+      } else {
+        if (_groups[i] == 1) {
+          _payedAmount = _payedAmount.sub(A_price);
+        } else if (_groups[i] == 2) {
+          _payedAmount = _payedAmount.sub(B_price);
+        } else if (_groups[i] == 3) {
+          _payedAmount = _payedAmount.sub(C_price);
+        } else {
+          require(false, "a group number can only be 1 , 2 or 3");
+        }
+      }
+    }
+  }
+
+  function _discountedB(uint8[] memory _groups) internal returns (uint256 _payedAmount) {
+    bool jumped;
+    _payedAmount = msg.value;
+    for (uint256 i = 0; i < _groups.length; i++) {
+      if (_groups[i] == 2 && !jumped) {
+        jumped = true;
+      } else {
+        if (_groups[i] == 1) {
+          _payedAmount = _payedAmount.sub(A_price);
+        } else if (_groups[i] == 2) {
+          _payedAmount = _payedAmount.sub(B_price);
+        } else if (_groups[i] == 3) {
+          _payedAmount = _payedAmount.sub(C_price);
+        } else {
+          require(false, "a group number can only be 1 , 2 or 3");
+        }
+      }
+    }
+  }
+
+  function _discountedC(uint8[] memory _groups) internal returns (uint256 _payedAmount) {
+    bool jumped;
+    _payedAmount = msg.value;
+    for (uint256 i = 0; i < _groups.length; i++) {
+      if (_groups[i] == 3 && !jumped) {
+        jumped = true;
+      } else {
+        if (_groups[i] == 1) {
+          _payedAmount = _payedAmount.sub(A_price);
+        } else if (_groups[i] == 2) {
+          _payedAmount = _payedAmount.sub(B_price);
+        } else if (_groups[i] == 3) {
+          _payedAmount = _payedAmount.sub(C_price);
+        } else {
+          require(false, "a group number can only be 1 , 2 or 3");
+        }
+      }
+    }
+  }
+
   function publicMint(
     uint8[] memory _groups,
     bytes32[] calldata _proofOfDiscount,
@@ -1356,61 +1416,13 @@ contract ERC721RG is randomizedABC, ERC721("Fruits2", "FRS2"), provable {
       require(chosenGroupForDiscount > 0 && chosenGroupForDiscount <= 3, "Should chose discounted group 1 , 2 or 3");
       uint256 discountedPercentage;
       if (chosenGroupForDiscount == 1) {
-        bool jumped;
-        uint256 _payedAmount = msg.value;
-        for (uint256 i = 0; i < _groups.length; i++) {
-          if (_groups[i] == 1 && !jumped) {
-            jumped = true;
-          } else {
-            if (_groups[i] == 1) {
-              _payedAmount = _payedAmount.sub(A_price);
-            } else if (_groups[i] == 2) {
-              _payedAmount = _payedAmount.sub(B_price);
-            } else if (_groups[i] == 3) {
-              _payedAmount = _payedAmount.sub(C_price);
-            } else {
-              require(false, "a group number can only be 1 , 2 or 3");
-            }
-          }
-        }
+        uint256 _payedAmount = _discountedA(_groups);
         discountedPercentage = uint256(100).sub((_payedAmount).mul(100).div(A_price));
       } else if (chosenGroupForDiscount == 2) {
-        bool jumped;
-        uint256 _payedAmount = msg.value;
-        for (uint256 i = 0; i < _groups.length; i++) {
-          if (_groups[i] == 2 && !jumped) {
-            jumped = true;
-          } else {
-            if (_groups[i] == 1) {
-              _payedAmount = _payedAmount.sub(A_price);
-            } else if (_groups[i] == 2) {
-              _payedAmount = _payedAmount.sub(B_price);
-            } else if (_groups[i] == 3) {
-              _payedAmount = _payedAmount.sub(C_price);
-            } else {
-              require(false, "a group number can only be 1 , 2 or 3");
-            }
-          }
-        }
+        uint256 _payedAmount = _discountedB(_groups);
         discountedPercentage = uint256(100).sub((_payedAmount).mul(100).div(B_price));
       } else {
-        bool jumped;
-        uint256 _payedAmount = msg.value;
-        for (uint256 i = 0; i < _groups.length; i++) {
-          if (_groups[i] == 3 && !jumped) {
-            jumped = true;
-          } else {
-            if (_groups[i] == 1) {
-              _payedAmount = _payedAmount.sub(A_price);
-            } else if (_groups[i] == 2) {
-              _payedAmount = _payedAmount.sub(B_price);
-            } else if (_groups[i] == 3) {
-              _payedAmount = _payedAmount.sub(C_price);
-            } else {
-              require(false, "a group number can only be 1 , 2 or 3");
-            }
-          }
-        }
+        uint256 _payedAmount = _discountedC(_groups);
         discountedPercentage = uint256(100).sub((_payedAmount).mul(100).div(C_price));
       }
 
