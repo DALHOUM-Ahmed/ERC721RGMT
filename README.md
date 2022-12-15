@@ -34,5 +34,8 @@ uint256 _Cprice</li>
 <li class="has-line-data" data-line-start="37" data-line-end="38">[setPaused] - this will allow the owner to pause/unpause the public mint</li>
 <li class="has-line-data" data-line-start="38" data-line-end="39">[updateDiscountRoot] - will allow the owner to update root for the discounted list</li>
 <li class="has-line-data" data-line-start="39" data-line-end="40">[updateEarlyMintRoot] - will allow the owner to update root for the early mint list</li>
+<li class="has-line-data" data-line-start="39" data-line-end="40">[setBaseURIs] - will allow the owner to set the base uri for revealing, being able to set _revealed to true, on reveal</li>
+<li class="has-line-data" data-line-start="39" data-line-end="40">[toggleRevealed] - will allow the owner to reveal/unreveal</li>
+<li class="has-line-data" data-line-start="39" data-line-end="40">[setUnrevealedURIs] - will allow the owner to set unrevealed uri</li>
 </ul>
 <h6 class="code-line" data-line-start=40 data-line-end=41 ><a id="a_root_is_a_32_bytes_presenting_the_merkle_root_for_an_action_40"></a>a root is a 32 bytes presenting the merkle root for an action</h6>
