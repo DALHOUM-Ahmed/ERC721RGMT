@@ -39,11 +39,13 @@ uint256 _Cprice</li>
 <li class="has-line-data" data-line-start="39" data-line-end="40">[setUnrevealedURIs] - will allow the owner to set unrevealed uri</li>
 </ul>
 update those variables to specify the is range for each group
-_inclusiveLowerBorder_A
-_inclusiveUpperBorder_A
-_inclusiveLowerBorder_B
-_inclusiveUpperBorder_B
-_inclusiveLowerBorder_C
-_inclusiveUpperBorder_C
+<ul>
+<li>_inclusiveLowerBorder_A</li>
+<li>_inclusiveUpperBorder_A</li>
+<li>_inclusiveLowerBorder_B</li>
+<li>_inclusiveUpperBorder_B</li>
+<li>_inclusiveLowerBorder_C</li>
+<li>_inclusiveUpperBorder_C</li>
+</ul>
 
 <h6 class="code-line" data-line-start=40 data-line-end=41 ><a id="a_root_is_a_32_bytes_presenting_the_merkle_root_for_an_action_40"></a>a root is a 32 bytes presenting the merkle root for an action</h6>
