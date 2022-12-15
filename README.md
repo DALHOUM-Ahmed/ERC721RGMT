@@ -10,7 +10,6 @@ with ability to have an early mint and/or a discount</p>
 </blockquote>
 <p class="has-line-data" data-line-start="13" data-line-end="14">the following is a list for the added functions</p>
 <h2 class="code-line" data-line-start=15 data-line-end=16 ><a id="Special_functions_15"></a>Special functions</h2>
-<p class="has-line-data" data-line-start="17" data-line-end="18">Dillinger uses a number of open source projects to work properly:</p>
 <ul>
 <li class="has-line-data" data-line-start="19" data-line-end="30">
 <p class="has-line-data" data-line-start="19" data-line-end="25">[publicMint] - taking 4 parameters:<br>
