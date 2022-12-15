@@ -741,6 +741,7 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, Ownable {
   string private _symbol;
 
   string private _URI = "_URI";
+  string public _unRevealedBaseURI = "ipfs://QmT8xxV9aVW9CxCNZ7gt1qq6ueLTPGgywvfcrAdLZXTzRt/";
 
   // Mapping from token ID to owner address
   mapping(uint256 => address) private _owners;
@@ -810,11 +811,11 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, Ownable {
       return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
     } else {
       if (tokenId <= 10) {
-        return "ipfs://QmT8xxV9aVW9CxCNZ7gt1qq6ueLTPGgywvfcrAdLZXTzRt/pears.json";
+        return string(abi.encodePacked(_unRevealedBaseURI, tokenId.toString(), "pears.json"));
       } else if (tokenId <= 20) {
-        return "ipfs://QmT8xxV9aVW9CxCNZ7gt1qq6ueLTPGgywvfcrAdLZXTzRt/cherry.json";
+        return string(abi.encodePacked(_unRevealedBaseURI, tokenId.toString(), "cherry.json"));
       } else {
-        return "ipfs://QmT8xxV9aVW9CxCNZ7gt1qq6ueLTPGgywvfcrAdLZXTzRt/grapes.json";
+        return string(abi.encodePacked(_unRevealedBaseURI, tokenId.toString(), "grapes.json"));
       }
     }
   }
