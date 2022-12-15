@@ -846,6 +846,10 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, Ownable {
     revealed = _revealed;
   }
 
+  function setUnrevealedURIs(string memory _uri) external onlyOwner {
+    _unRevealedBaseURI = _uri;
+  }
+
   function toggleRevealed() external onlyOwner {
     revealed = !revealed;
   }
