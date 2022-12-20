@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.7.0) (token/ERC721/ERC721.sol)
 
-import "hardhat/console.sol";
-
 pragma solidity ^0.8.0;
 
 interface IERC165 {
@@ -1383,13 +1381,10 @@ contract ERC721RG is randomizedABC, ERC721("Fruits2", "FRS2"), provable {
         }
         discountedPercentage = uint256(100).sub((_payedAmount).mul(100).div(A_price));
       } else if (chosenGroupForDiscount == 2) {
-        //console.log("chosen group is 2", msg.value);
-        //console.log("calculated price", _price);
         bool jumped;
         uint256 _payedAmount = msg.value;
         for (uint256 i = 0; i < _groups.length; i++) {
           if (_groups[i] == 2 && !jumped) {
-            //console.log("jumping");
             jumped = true;
           } else {
             if (_groups[i] == 1) {
@@ -1403,8 +1398,6 @@ contract ERC721RG is randomizedABC, ERC721("Fruits2", "FRS2"), provable {
             }
           }
         }
-        //console.log("price left", _payedAmount);
-        //console.log("payed percentage", (_payedAmount).mul(100).div(B_price));
         discountedPercentage = uint256(100).sub((_payedAmount).mul(100).div(B_price));
       } else {
         bool jumped;
