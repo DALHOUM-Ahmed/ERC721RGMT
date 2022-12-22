@@ -15,6 +15,16 @@ const delay = (duration = 1000) => {
   });
 };
 
+function price(combination) {
+  let _price = 0;
+  for (let i = 0; i < combination.length; i++) {
+    if (combination[i] == "1") _price += 1;
+    if (combination[i] == "2") _price += 2;
+    if (combination[i] == "3") _price += 3;
+  }
+  return _price;
+}
+
 const moveTime = async (time) => {
   await ethers.provider.send("evm_increaseTime", [time]);
   await ethers.provider.send("evm_mine");
@@ -28,7 +38,7 @@ const loadContract = async (path, address) => {
   return contract;
 };
 
-describe("Sweply private round vest", function () {
+describe("ERC721rgmt cases", function () {
   let owner, normalSigner, signerWithDiscount, signerWithEarlyMint, abc;
 
   beforeEach(async function () {
@@ -263,4 +273,53 @@ describe("Sweply private round vest", function () {
       );
     expect(await abc.balanceOf(signerWithDiscount.address)).to.be.eq(3);
   });
+
+  let s = 0;
+  function printAllKLength(set, k) {
+    let n = set.length;
+    printAllKLengthRec(set, "", n, k);
+  }
+
+  function printAllKLengthRec(set, prefix, n, k) {
+    if (k == 0) {
+      const combination = prefix.split("");
+      it(
+        "Should allow normal signer to buy after launch with a combination of " +
+          combination,
+        async function () {
+          await abc.connect(owner).toggleLaunch();
+          await abc
+            .connect(normalSigner)
+            .publicMint(
+              combination,
+              [
+                "0x0000000000000000000000000000000000000000000000000000000000000000",
+              ],
+              0,
+              [
+                "0x0000000000000000000000000000000000000000000000000000000000000000",
+              ],
+              {
+                value: ethers.BigNumber.from(
+                  price(combination) + "000000000000000000"
+                ),
+              }
+            );
+          expect(await abc.balanceOf(normalSigner.address)).to.be.eq(
+            combination.length
+          );
+        }
+      );
+      return;
+    }
+
+    for (let i = 0; i < n; ++i) {
+      let newPrefix = prefix + set[i];
+      printAllKLengthRec(set, newPrefix, n, k - 1);
+    }
+  }
+
+  console.log("************Combinations test*************");
+  let set = ["1", "2", "3"];
+  for (let k = 1; k <= 3; k++) printAllKLength(set, k);
 });
