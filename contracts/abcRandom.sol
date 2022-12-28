@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.7.0) (token/ERC721/ERC721.sol)
 
+
 pragma solidity ^0.8.0;
 
 interface IERC165 {
@@ -740,7 +741,8 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, Ownable {
   // Token symbol
   string private _symbol;
 
-  string public _URI = "_URI";
+  string private _URI = "_URI";
+  string public _unRevealedBaseURI = "ipfs://QmT8xxV9aVW9CxCNZ7gt1qq6ueLTPGgywvfcrAdLZXTzRt/";
 
   // Mapping from token ID to owner address
   mapping(uint256 => address) private _owners;
@@ -753,8 +755,6 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, Ownable {
 
   // Mapping from owner to operator approvals
   mapping(address => mapping(address => bool)) private _operatorApprovals;
-
-  string public _unRevealedBaseURI = "ipfs://QmT8xxV9aVW9CxCNZ7gt1qq6ueLTPGgywvfcrAdLZXTzRt/";
 
   /**
    * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
@@ -769,10 +769,6 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, Ownable {
    */
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
     return interfaceId == type(IERC721).interfaceId || interfaceId == type(IERC721Metadata).interfaceId || super.supportsInterface(interfaceId);
-  }
-
-  function setUnrevealedURIs(string memory _uri) external onlyOwner {
-    _unRevealedBaseURI = _uri;
   }
 
   /**
@@ -806,14 +802,23 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, Ownable {
     return _symbol;
   }
 
+
+
   /**
    * @dev See {IERC721Metadata-tokenURI}.
    */
   function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-    _requireMinted(tokenId);
-    if (revealed) {
+   // _requireMinted(tokenId);
+   // if (revealed) {
+     if(true){
       string memory baseURI = _baseURI();
-      return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
+      if(tokenId < 10){
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI,"00", tokenId.toString(), ".json")) : "";
+      }else if(tokenId < 100){
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI,"0", tokenId.toString(), ".json")) : "";
+        }else {
+          return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
+        }
     } else {
       if (tokenId <= 10) {
         return string(abi.encodePacked(_unRevealedBaseURI, tokenId.toString(), "pears.json"));
@@ -846,9 +851,15 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, Ownable {
     _approve(to, tokenId);
   }
 
-  function setBaseURIs(bool _revealed, string memory _uri) external onlyOwner {
+  bool _uriSet;
+  function setBaseURIs(string memory _uri) external onlyOwner {
+    require(!_uriSet, "One time set!");
+    _uriSet = true;
     _URI = _uri;
-    revealed = _revealed;
+  }
+
+  function setUnrevealedURIs(string memory _uri) external onlyOwner {
+    _unRevealedBaseURI = _uri;
   }
 
   function toggleRevealed() external onlyOwner {
@@ -1281,8 +1292,8 @@ contract provable is Ownable {
   address public abcToken;
   mapping(address => bool) public claimed;
   mapping(address => bool) public didEarlyMint;
-  bytes32 public discountRoot = 0x606d1b05d22c0e0ae26690e42b36d1852e08f0acd609e916a835e760c679f5c1;
-  bytes32 public earlyMintRoot = 0xfb96bcace27fd3b02d22a9f85fa18660561a8b44b784522543d017bb7fe88f74;
+  bytes32 public discountRoot = 0xd5716ab9cc8988a6c741a04cf1766a5e7e08fbd6eae1b30bda05f2aca3846525;
+  bytes32 public earlyMintRoot = 0xb13d7dc1747cd3235f5fb0e0517202edd4456941fa5ae56a6984348adc22e1e5;
 
   function updateDiscountRoot(bytes32 _merkleRoot) external onlyOwner {
     discountRoot = _merkleRoot;
@@ -1314,9 +1325,9 @@ contract provable is Ownable {
 contract ERC721RG is randomizedABC, ERC721("Fruits2", "FRS2"), provable {
   using SafeMath for uint256;
 
-  uint256 public A_price = 1000000000000000000;
-  uint256 public B_price = 2000000000000000000;
-  uint256 public C_price = 3000000000000000000;
+  uint256 public A_price = 100000000000000;
+  uint256 public B_price = 200000000000000;
+  uint256 public C_price = 300000000000000;
 
   bool _paused = false;
   bool public _launched = false;
@@ -1345,25 +1356,9 @@ contract ERC721RG is randomizedABC, ERC721("Fruits2", "FRS2"), provable {
     C_price = _Cprice;
   }
 
-  function publicMint(
-    uint8[] memory _groups,
-    bytes32[] calldata _proofOfDiscount,
-    uint256 chosenGroupForDiscount,
-    bytes32[] calldata _proofOfEarlyMint
-  ) external payable {
-    require(msg.sender == tx.origin, "Bot! go away");
-    require(_groups.length + balanceOf(_msgSender()) <= 3, "Only 3 per wallet!");
-    require(_launched || verifyEarlyMint(msg.sender, _proofOfEarlyMint), "Not launched!");
-    require(!_paused, "Minting is paused");
-    uint256 _price = _mintGroups(_groups);
-    if (_proofOfDiscount[0] == bytes32(0)) {
-      require(msg.value == _price, "Wrong minting price");
-    } else {
-      require(chosenGroupForDiscount > 0 && chosenGroupForDiscount <= 3, "Should chose discounted group 1 , 2 or 3");
-      uint256 discountedPercentage;
-      if (chosenGroupForDiscount == 1) {
-        bool jumped;
-        uint256 _payedAmount = msg.value;
+  function _discountedA(uint8[] memory _groups) internal returns(uint256 _payedAmount){
+    bool jumped;
+        _payedAmount = msg.value;
         for (uint256 i = 0; i < _groups.length; i++) {
           if (_groups[i] == 1 && !jumped) {
             jumped = true;
@@ -1379,10 +1374,11 @@ contract ERC721RG is randomizedABC, ERC721("Fruits2", "FRS2"), provable {
             }
           }
         }
-        discountedPercentage = uint256(100).sub((_payedAmount).mul(100).div(A_price));
-      } else if (chosenGroupForDiscount == 2) {
-        bool jumped;
-        uint256 _payedAmount = msg.value;
+  }
+
+    function _discountedB(uint8[] memory _groups) internal returns(uint256 _payedAmount){
+    bool jumped;
+        _payedAmount = msg.value;
         for (uint256 i = 0; i < _groups.length; i++) {
           if (_groups[i] == 2 && !jumped) {
             jumped = true;
@@ -1398,10 +1394,11 @@ contract ERC721RG is randomizedABC, ERC721("Fruits2", "FRS2"), provable {
             }
           }
         }
-        discountedPercentage = uint256(100).sub((_payedAmount).mul(100).div(B_price));
-      } else {
-        bool jumped;
-        uint256 _payedAmount = msg.value;
+  }
+
+      function _discountedC(uint8[] memory _groups) internal returns(uint256 _payedAmount){
+            bool jumped;
+        _payedAmount = msg.value;
         for (uint256 i = 0; i < _groups.length; i++) {
           if (_groups[i] == 3 && !jumped) {
             jumped = true;
@@ -1417,6 +1414,35 @@ contract ERC721RG is randomizedABC, ERC721("Fruits2", "FRS2"), provable {
             }
           }
         }
+  }
+
+
+
+  function publicMint(
+    uint8[] memory _groups,
+    bytes32[] calldata _proofOfDiscount,
+    uint256 chosenGroupForDiscount,
+    bytes32[] calldata _proofOfEarlyMint
+  ) external payable {
+    require(msg.sender == tx.origin, "Bot! go away");
+    require(_groups.length + balanceOf(_msgSender()) <= 3, "Only 3 per wallet!");
+    require(_launched || (verifyEarlyMint(msg.sender, _proofOfEarlyMint)), "Not launched!");
+    require(!_paused, "Minting is paused");
+    uint256 _price = _mintGroups(_groups);
+    if (_proofOfDiscount[0] == bytes32(0)) {
+      require(msg.value == _price, "Wrong minting price");
+    } else {
+      require(chosenGroupForDiscount > 0 && chosenGroupForDiscount <= 3, "Should chose discounted group 1 , 2 or 3");
+      uint256 discountedPercentage;
+      if (chosenGroupForDiscount == 1) {
+        
+        uint256 _payedAmount = _discountedA(_groups);
+        discountedPercentage = uint256(100).sub((_payedAmount).mul(100).div(A_price));
+      } else if (chosenGroupForDiscount == 2) {
+        uint256 _payedAmount = _discountedB(_groups);
+        discountedPercentage = uint256(100).sub((_payedAmount).mul(100).div(B_price));
+      } else {
+        uint256 _payedAmount = _discountedC(_groups);
         discountedPercentage = uint256(100).sub((_payedAmount).mul(100).div(C_price));
       }
 
