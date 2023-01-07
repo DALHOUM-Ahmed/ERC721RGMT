@@ -808,9 +808,8 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, Ownable {
    * @dev See {IERC721Metadata-tokenURI}.
    */
   function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-   // _requireMinted(tokenId);
-   // if (revealed) {
-     if(true){
+    _requireMinted(tokenId);
+    if (revealed) {
       string memory baseURI = _baseURI();
       if(tokenId < 10){
         return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI,"00", tokenId.toString(), ".json")) : "";
